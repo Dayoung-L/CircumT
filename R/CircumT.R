@@ -512,7 +512,6 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     dPxdv = matrix(0,p*(p-1)/2,p)
     
     for (l in 1:p) {
-      
       kk <- matrix(0,p,p)
       diag(kk)[l] <- (-1/2)*((1+v[l])^(-3/2))
       
@@ -522,9 +521,7 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
       dPxdvl = (kk%*%(Pc+Dv)%*%Dz2) + t(kk%*%(Pc+Dv)%*%Dz2) + Dz2%*%jj%*%Dz2
       
       dPxdv[,l] <-  as.vector(dPxdvl[lower.tri(dPxdvl)])
-      
     }
-    
     
     dPxdr = cbind(dPxdthe[,-1], dPxdb, dPxdv)
     
@@ -532,8 +529,7 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     res = as.matrix(res[upper.tri(res)])
     
     ex = matrix(0,p,p)
-    ex[lower.tri(ex)] = 1:(p*(p-1)/2)
-    ex[upper.tri(ex)] = 1:(p*(p-1)/2)
+    ex[lower.tri(ex)] = 1:(p*(p-1)/2); ex[upper.tri(ex)] = 1:(p*(p-1)/2)
     ex2 = t(ex)
     
     Delta = dPxdr[ex2[upper.tri(ex2)],]
@@ -556,14 +552,11 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     df = pstar - q
     
     if (ts.st < df) {
-      
       RMSEA = 0
-      
     } else {
-      
       RMSEA = sqrt((ts.st - df)/(df*N))
-      
     }
+    
     p.perfect = 1 - pchisq(ts.st,df,ncp=0)
     p.close = 1 - pchisq(ts.st,df,ncp=0.0025*N*df)
     
@@ -573,13 +566,11 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     
     # dtdt
     # i =/ j case
-    k = c(1:m)
-    hh = list()
+    k = c(1:m); hh = list()
     
-    for (i in 1:(p-1))
-    {hh[[i]] = rep(0,p-i)
-    for (j in (i+1):p)
-    {hh[[i]][(j-i)] = (k^2%*%(b[2:(m+1)]*cos(k*(ang[j]-ang[i]))))*z2[j]*z2[i]}
+    for (i in 1:(p-1)){
+      hh[[i]] = rep(0,p-i)
+      for (j in (i+1):p) { hh[[i]][(j-i)] = (k^2%*%(b[2:(m+1)]*cos(k*(ang[j]-ang[i]))))*z2[j]*z2[i] }
     }
     
     xx = rep(0,p*(p-1)/2)
@@ -592,25 +583,24 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     # i=j
     
     nn=list()
-    
-    for (i in (1:(p-1)))
-    {nn[[i]] = matrix(0,p,(p-i))
-    for (j in 1:(p-i))
-    {nn[[i]][i,j] = (-k^2%*%(b[2:(m+1)]*cos(k*(ang[(i+j)]-ang[i]))))*z2[(i+j)]*z2[i]}
+    for (i in (1:(p-1))) {
+      nn[[i]] = matrix(0,p,(p-i))
+      for (j in 1:(p-i)) { nn[[i]][i,j] = (-k^2%*%(b[2:(m+1)]*cos(k*(ang[(i+j)]-ang[i]))))*z2[(i+j)]*z2[i] }
     }
     
-    dPxdtdt.2 <- do.call(cbind, nn)
-    dPxdtdt.2 <- dPxdtdt.2[-1,]
-    
+    dPxdtdt.2 <- do.call(cbind, nn); dPxdtdt.2 <- dPxdtdt.2[-1,]
     dPxdtdt.2[1,1] = (-k^2%*%(b[2:(m+1)]*cos(k*(ang[(2)]-ang[1]))))*z2[(2)]*z2[1]
     
-    for (i in 2:(p-1))
-    { NN = c(i,(p-2):((p-2)-(i-2)))
-    WW = rep(0,(i))
-    for (MM in 1:i){WW[MM] = sum(NN[1:MM])}
-    for (JJ in WW)
-    { j = which(JJ == WW)
-    dPxdtdt.2[i,JJ] = (-k^2%*%(b[2:(m+1)]*cos(k*(ang[(i+1)]-ang[j]))))*z2[(i+1)]*z2[j]}
+    for (i in 2:(p-1)) {
+      NN = c(i,(p-2):((p-2)-(i-2)))
+      WW = rep(0,(i))
+      
+      for (MM in 1:i) { WW[MM] = sum(NN[1:MM]) }
+      
+      for (JJ in WW) {
+        j = which(JJ == WW)
+        dPxdtdt.2[i,JJ] = (-k^2%*%(b[2:(m+1)]*cos(k*(ang[(i+1)]-ang[j]))))*z2[(i+1)]*z2[j]
+      }
     }
     
     d2Pxdtdt <- rbind(dPxdtdt.1, dPxdtdt.2)
