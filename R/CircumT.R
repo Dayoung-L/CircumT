@@ -609,13 +609,14 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     
     dPxdtdbi=list()
     
-    for (i in 1:(p-1))
-    {dPxdtdbi[[i]] = matrix(0,(p-1)*m,(p-i))
-    for (j in ((1+m*(i-2)):(1+m*(i-2)+m-1)))
-    {q = j - m*(i-2)
-    for (K in ((1+i):p))
-    {dPxdtdbi[[i]][j,(K-i)] = (q*sin(q*(ang[K]-ang[i])))*z2[K]*z2[i]}
-    }
+    for (i in 1:(p-1)) {
+      dPxdtdbi[[i]] = matrix(0,(p-1)*m,(p-i))
+      for (j in ((1+m*(i-2)):(1+m*(i-2)+m-1))) {
+        q = j - m*(i-2)
+        for (K in ((1+i):p)) {
+          dPxdtdbi[[i]][j,(K-i)] = (q*sin(q*(ang[K]-ang[i])))*z2[K]*z2[i]
+        }
+      }
     }
     
     d2Pxdbdti <- do.call(cbind, dPxdtdbi)
@@ -623,10 +624,11 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     
     dPxdtdbj=list()
     
-    for (i in 1:(p-1))
-    {dPxdtdbj[[i]] = matrix(0,m*(p-1),(p-i))
-    for (j in 1:(p-i))
-    {dPxdtdbj[[i]][(1+m*(i-1)+m*(j-1)):(m+m*(i-1)+m*(j-1)),j] = (-c(1:m)*sin(c(1:m)*(ang[(i+j)]-ang[i])))*z2[(i+j)]*z2[i]}
+    for (i in 1:(p-1)) {
+      dPxdtdbj[[i]] = matrix(0,m*(p-1),(p-i))
+      for (j in 1:(p-i)) {
+        dPxdtdbj[[i]][(1+m*(i-1)+m*(j-1)):(m+m*(i-1)+m*(j-1)),j] = (-c(1:m)*sin(c(1:m)*(ang[(i+j)]-ang[i])))*z2[(i+j)]*z2[i]
+      }
     }
     
     d2Pxdbdtj <- do.call(cbind, dPxdtdbj)
@@ -637,88 +639,83 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
       if (m <=2) {d2Pxdbdt = matrix(0,m*(p-1),p*(p-1)/2)
       } else  {
         dPxdtdbi=list()
-        
-        for (i in 1:(p-1))
-        {dPxdtdbi[[i]] = matrix(0,(p-1)*m,(p-i))
-        for (j in ((1+m*(i-2)):(1+m*(i-2)+m-1)))
-        {q = j - m*(i-2)
-        for ( K in ((1+i):p))
-        {dPxdtdbi[[i]][j,(K-i)] = (q*sin(q*(ang[K]-ang[i])))*z2[K]*z2[i]}
-        dPxdtdbi[[i]][seq(2,((p-1)*m),by=2),] = 0
-        dPxdtdbi[[i]][1,] =0
-        } }
-        
-        d2Pxdbdti <- do.call(cbind, dPxdtdbi)
-        d2Pxdbdti[,c(1:(p-1))] <- 0
-        
-        dPxdtdbj=list()
-        
-        for (i in 1:(p-1))
-        {dPxdtdbj[[i]] = matrix(0,m*(p-1),(p-i))
-        for (j in 1:(p-i))
-        {dPxdtdbj[[i]][(1+m*(i-1)+m*(j-1)):(m+m*(i-1)+m*(j-1)),j] = (-c(1:m)*sin(c(1:m)*(ang[(i+j)]-ang[i])))*z2[(i+j)]*z2[i]}
-        dPxdtdbj[[i]][seq(2,((p-1)*m),by=2),] = 0
-        dPxdtdbj[[i]][1,] =0
+        for (i in 1:(p-1)) { 
+          dPxdtdbi[[i]] = matrix(0,(p-1)*m,(p-i))
+          for (j in ((1+m*(i-2)):(1+m*(i-2)+m-1))) { 
+            q = j - m*(i-2)
+            for ( K in ((1+i):p)) {
+              dPxdtdbi[[i]][j,(K-i)] = (q*sin(q*(ang[K]-ang[i])))*z2[K]*z2[i]
+            }
+            dPxdtdbi[[i]][seq(2,((p-1)*m),by=2),] = 0
+            dPxdtdbi[[i]][1,] =0
+          } 
         }
         
-        d2Pxdbdtj <- do.call(cbind, dPxdtdbj)
-        d2Pxdbdt = d2Pxdbdti + d2Pxdbdtj
-      }}  else {
-        
-        dPxdtdbi=list()
-        
-        for (i in 1:(p-1))
-        {dPxdtdbi[[i]] = matrix(0,(p-1)*m,(p-i))
-        for (j in ((1+m*(i-2)):(1+m*(i-2)+m-1)))
-        {q = j - m*(i-2)
-        for ( K in ((1+i):p))
-        {dPxdtdbi[[i]][j,(K-i)] = (q*sin(q*(ang[K]-ang[i])))*z2[K]*z2[i]}
-        dPxdtdbi[[i]][1,] =0
-        } }
-        
         d2Pxdbdti <- do.call(cbind, dPxdtdbi)
         d2Pxdbdti[,c(1:(p-1))] <- 0
         
         dPxdtdbj=list()
         
-        for (i in 1:(p-1))
-        {dPxdtdbj[[i]] = matrix(0,m*(p-1),(p-i))
-        for (j in 1:(p-i))
-        {dPxdtdbj[[i]][(1+m*(i-1)+m*(j-1)):(m+m*(i-1)+m*(j-1)),j] = (-c(1:m)*sin(c(1:m)*(ang[(i+j)]-ang[i])))*z2[(i+j)]*z2[i]}
-        dPxdtdbj[[i]][1,] =0
+        for (i in 1:(p-1)) { 
+          dPxdtdbj[[i]] = matrix(0,m*(p-1),(p-i))
+          for (j in 1:(p-i)) { 
+            dPxdtdbj[[i]][(1+m*(i-1)+m*(j-1)):(m+m*(i-1)+m*(j-1)),j] = (-c(1:m)*sin(c(1:m)*(ang[(i+j)]-ang[i])))*z2[(i+j)]*z2[i]
+          }
+          dPxdtdbj[[i]][seq(2,((p-1)*m),by=2),] = 0
+          dPxdtdbj[[i]][1,] =0
         }
         
         d2Pxdbdtj <- do.call(cbind, dPxdtdbj)
         d2Pxdbdt = d2Pxdbdti + d2Pxdbdtj
       }
+    }  else {
+      dPxdtdbi=list()
+      for (i in 1:(p-1)) { 
+        dPxdtdbi[[i]] = matrix(0,(p-1)*m,(p-i))
+        for (j in ((1+m*(i-2)):(1+m*(i-2)+m-1))) { 
+          q = j - m*(i-2)
+          for ( K in ((1+i):p)) { 
+            dPxdtdbi[[i]][j,(K-i)] = (q*sin(q*(ang[K]-ang[i])))*z2[K]*z2[i]}
+          dPxdtdbi[[i]][1,] =0
+        } 
+      }
+      
+      d2Pxdbdti <- do.call(cbind, dPxdtdbi)
+      d2Pxdbdti[,c(1:(p-1))] <- 0
+      
+      dPxdtdbj=list()
+      for (i in 1:(p-1)) { 
+        dPxdtdbj[[i]] = matrix(0,m*(p-1),(p-i))
+        for (j in 1:(p-i)) { 
+          dPxdtdbj[[i]][(1+m*(i-1)+m*(j-1)):(m+m*(i-1)+m*(j-1)),j] = (-c(1:m)*sin(c(1:m)*(ang[(i+j)]-ang[i])))*z2[(i+j)]*z2[i]}
+        dPxdtdbj[[i]][1,] =0
+      }
+      
+      d2Pxdbdtj <- do.call(cbind, dPxdtdbj)
+      d2Pxdbdt = d2Pxdbdti + d2Pxdbdtj
+    }
     
     # dtdn
     
-    angi <- function(ang,i,j,m){
+    angi <- function(ang,i,j,m) {
       x = rep(0, m)
-      
-      for (K in 1:m)
-      {x[K] = K*b[K+1]*sin(K*(ang[j]-ang[i]))}
-      
-      sum(x)}
+      for (K in 1:m) { x[K] = K*b[K+1]*sin(K*(ang[j]-ang[i])) }
+      sum(x)
+    }
     
-    angj <- function(ang,i,j,m)
-    {x = rep(0, m)
-    
-    for (K in 1:m)
-    {x[K] = -K*b[K+1]*sin(K*(ang[j]-ang[i]))}
-    
-    sum(x)}
+    angj <- function(ang,i,j,m) {
+      x = rep(0, m)
+      for (K in 1:m) { x[K] = -K*b[K+1]*sin(K*(ang[j]-ang[i])) }
+      sum(x)
+    }
     
     dPxdthe <- list()
+    for (ii in 1:(p-1)) { dPxdthe[[ii]] <- matrix(0, (p-ii), p) }
     
-    for (ii in 1:(p-1)){dPxdthe[[ii]] <- matrix(0, (p-ii), (p))}
-    
-    for (ii in 1:(p-1))
-    {
-      for (l in 1:(p-ii))
-      { dPxdthe[[ii]][l,ii] <- angi(ang,ii,(ii+l),m)
-      dPxdthe[[ii]][l,(ii+l)] <- angj(ang,ii,(ii+l),m)
+    for (ii in 1:(p-1)) {
+      for (l in 1:(p-ii)) { 
+        dPxdthe[[ii]][l,ii] <- angi(ang,ii,(ii+l),m)
+        dPxdthe[[ii]][l,(ii+l)] <- angj(ang,ii,(ii+l),m)
       }
     }
     
@@ -726,26 +723,22 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     
     tt = list()
     
-    for (i in 1:p)
-    {
+    for (i in 1:p) {
       tt[[i]] = matrix(0,p,p)
-      
       tt[[i]][lower.tri(tt[[i]])] <- dPxdthe[,i]
       tt[[i]] = tt[[i]] + t(tt[[i]])
     }
     
     dPxdthedv = list()
     
-    for (i in 1:p){
+    for (i in 1:p) {
       dPxdthedv[[i]] =  matrix(0, p, p*(p-1)/2)
       
       for(l in 1:p){
-        
         KK <- matrix(0,p,p)
         diag(KK)[l] <- (-1/2)*(1+v[l])^(-3/2)
         
         dPxdthedvl = KK%*%tt[[i]]%*%Dz2 + t(KK%*%tt[[i]]%*%Dz2)
-        
         dPxdthedv[[i]][l,] = as.vector(dPxdthedvl[lower.tri(dPxdthedvl)])
       }
     }
@@ -922,40 +915,43 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     resultA$RMSEA = RMSEA
     resultA$perfect.fit = p.perfect
     resultA$close.fit = p.close
-    resultA$s.e = se/sqrt(N)
     resultA$df = df
+    resultA$s.e = se/sqrt(N)
     return(resultA)
   }
   
   estim <- est$par
-  estim2 = estim
   
+  # alpha to beta 
   if (m==1){
     estim[(p-1+1):(p-1+m)] <- 1 - estim[(p-1+1):(p-1+m)]/(1+sum(estim[(p-1+1):(p-1+m)]))
   } else estim[(p-1+1):(p-1+m)] <- c(1, estim[(p-1+2):(p-1+m)])/(1+sum(estim[(p-1+1):(p-1+m)]))
   
-  
   op = which(estim[1:(p-1)]>2*pi)
   estim[op] = estim[op] - 2*pi
+  
   op2 = which(estim[1:(p-1)]<0)
   estim[op2] = 2*pi + estim[op2]
   estim[1:(p-1)] = estim[1:(p-1)]*180/pi
-  com = sqrt(1/(1+estim[(length(estim)-p+1) : length(estim)]))
   
+  # u: unique variance
   v.se = test.stat(est$par)$s.e[(length(estim)-p+1) : length(estim)]
+  
+  # com: communality index
+  com = sqrt(1/(1+estim[(length(estim)-p+1) : length(estim)]))
   com.se = 1/2*v.se*(1+estim[(length(estim)-p+1) : length(estim)])^(-3/2)
   
-  result = list()
-  result$coefficients = data.frame(point.estimates = c(estim[1:(p+m-1)],com), SE = c(test.stat(est$par)$s.e[1:(p+m-1)],com.se))
-  result$v = data.frame(v = estim[(p+m):(length(estim))], SE = v.se)
-  result$test.stat = test.stat(est$par)
-  result$radians = estim2
-  result$optim = est
+  coef = rbind(data.frame(Estimates = c(estim[1:(p+m-1)],com), SE = c(test.stat(est$par)$s.e[1:(p+m-1)],com.se)),
+  data.frame(Estimates = estim[(p+m):(length(estim))], SE = v.se))
+  rownames(coef) = c(paste("a", 2:p, sep = ""), paste("b", 1:m, sep = ""), paste("z", 1:p, sep = ""), paste("u", 1:p, sep = ""))
   
-  if (sum(is.na(result$coef$SE)) != 0) result$SE_NA = 1
+  if (any(is.na(coef$SE))) warning("NA in the standard error estimates")
+  
+  result = list(coef = coef, test = test.stat(est$par), optim = est)
   
   class(result) = "CircumT"
   return(result)
 }
 
-print.CircumT = function(x, ...) print(x[1:5])
+print.CircumT = function(x, ...) print(list(coef = round(x[[1]],2), test = x[[2]][1:5]))
+
