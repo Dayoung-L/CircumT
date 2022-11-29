@@ -877,46 +877,39 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     BB = t(Delta)%*%Y.Hat%*%Delta
     hh[[1]] <- NULL
     
-    for (i in 1:(length(par)))
-    {for (j in i:(length(par)))
-    {if (i <= (p-1) & j <= (p-1)){
-      if (i == j) {d2Pxdrdr = dPxdtdt.2[i,]
-      } else {
-        d2Pxdrdr = rep(0,p*(p-1)/2)
-        d2Pxdrdr[(i*p - i*(i+1)/2 + (j-i))] = hh[[i]][(j-i)]}
-    }else if (i <= (p-1) & j > (p-1) & j <= (p+m-1))
-    {d2Pxdrdr = d2Pxdbdt[(m*(i-1)+(j-(p-1))),] # dtdb
-    }else if (i <= (p-1) & j > (p+m-1))
-    {d2Pxdrdr = d2Pxdtdv[(p*(i-1)+(j-(p+m-1))),]
-    }else if (i > (p-1) & i <= (p+m-1) & j > (p-1) & j <= (p+m-1))
-    {d2Pxdrdr = rep(0,p*(p-1)/2)
-    }else if (i > (p-1) & i <= (p+m-1) & j > (p+m-1))
-    {d2Pxdrdr = d2Pxdbdv[(p*(i-(p-1)-1)+(j-(p+m-1))),]
-    }else if (i > (p+m-1) & j > (p+m-1))
-    {ii = i - (p+m-1); jj = j - (p+m-1)
-    d2Pxdrdr = d2Pxdvdv[((2*p-(ii-2))*(ii-1)/2 + j - i + 1),]
-    }
-      
-      AA[i,j] = (DD[i,j] + d2Pxdrdr%*%res)}
+    for (i in 1:(length(par))) { 
+      for (j in i:(length(par))) {
+        if (i <= (p-1) & j <= (p-1)) {
+          if (i == j) {d2Pxdrdr = dPxdtdt.2[i,]
+          } else {
+            d2Pxdrdr = rep(0,p*(p-1)/2); d2Pxdrdr[(i*p - i*(i+1)/2 + (j-i))] = hh[[i]][(j-i)]
+          }
+        } else if (i <= (p-1) & j > (p-1) & j <= (p+m-1)) {
+          d2Pxdrdr = d2Pxdbdt[(m*(i-1)+(j-(p-1))),] # dtdb
+        } else if (i <= (p-1) & j > (p+m-1)) { 
+          d2Pxdrdr = d2Pxdtdv[(p*(i-1)+(j-(p+m-1))),]
+        } else if (i > (p-1) & i <= (p+m-1) & j > (p-1) & j <= (p+m-1)) { 
+          d2Pxdrdr = rep(0,p*(p-1)/2)
+        } else if (i > (p-1) & i <= (p+m-1) & j > (p+m-1)) {
+          d2Pxdrdr = d2Pxdbdv[(p*(i-(p-1)-1)+(j-(p+m-1))),]
+        } else if (i > (p+m-1) & j > (p+m-1)) {
+          ii = i - (p+m-1); jj = j - (p+m-1)
+          d2Pxdrdr = d2Pxdvdv[((2*p-(ii-2))*(ii-1)/2 + j - i + 1),]
+        }
+        AA[i,j] = (DD[i,j] + d2Pxdrdr%*%res)
+      }
     }
     
-    AA.t = t(AA)
-    diag(AA.t) = 0
-    AA = AA + AA.t
+    AA.t = t(AA); diag(AA.t) = 0; AA = AA + AA.t
     
     if (any(eigen(AA)$val < 0)) stop("The second-order derivatives are negative definite.")
     
-    ##se of beta1 ~
+    ## se of beta1 ~
     se = sqrt(diag(solve(AA)%*%BB%*%solve(AA)))
     se[1:(p-1)] = se[1:(p-1)]*180/pi
     
-    resultA = list()
-    resultA$test.stat = ts.st
-    resultA$RMSEA = RMSEA
-    resultA$perfect.fit = p.perfect
-    resultA$close.fit = p.close
-    resultA$df = df
-    resultA$s.e = se/sqrt(N)
+    resultA = list(test.stat = ts.st, RMSEA = RMSEA, perferct.fit = p.perfect, close.fit = p.close, df = df, s.e = se/sqrt(N))
+    
     return(resultA)
   }
   
