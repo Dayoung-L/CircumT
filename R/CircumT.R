@@ -2,8 +2,7 @@
 # 11.21.22 exclude negative definite A matrix
 # 11.27.22 Develop a package
 
-CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", maxit = 1000, factr = 1e9, pgtol = 0, lmm = NULL)
-{
+CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", maxit = 1000, factr = 1e9, pgtol = 0, lmm = NULL) {
   library(EFAutilities)
   library(MASS)
   
@@ -34,14 +33,13 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     lambdasim = lambdastar%*%U
     lambdadot = matrix(data=NA, nrow = p, ncol = 2)
     
-    for(i in 1:p){
-      for(j in 1:2){
+    for(i in 1:p) {
+      for(j in 1:2) {
         lambdadot[i,j] = lambdasim[i,j] / sqrt(lambdasim[i,1]^2 + lambdasim[i,2]^2)
       }
     }
     
-    theta = function(lambdadot)
-    {
+    theta = function(lambdadot) {
       a = rep(0, nrow(lambdadot))
       
       for (i in seq(1:nrow(lambdadot))[-r]){
@@ -172,8 +170,8 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
       
       # theta
       
-      angi <- function(ang,i,j,m)
-      { x = rep(0, m)
+      angi <- function(ang,i,j,m) { 
+        x = rep(0, m)
         
         for (k in 1:m)
         {x[k] = k*b[k+1]*sin(k*(ang[j]-ang[i]))}
@@ -181,8 +179,8 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
         z2[i]*z2[j]*sum(x)
       }
       
-      angj <- function(ang,i,j,m)
-      { x = rep(0, m)
+      angj <- function(ang,i,j,m) {
+      x = rep(0, m)
       
       for (k in 1:m) {x[k] = -k*b[k+1]*sin(k*(ang[j]-ang[i]))}
       
@@ -306,8 +304,7 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
   if (sum(est$par[(p+m):(2*p+m-1)]==0) != 0) warning("Heywood case occurs")
   if (est$convergence != 0) warning("Convergence error occurs")
   
-  test.stat = function(par)
-  {
+  test.stat = function(par) {
     R = dt
     p = ncol(dt)
     ang1=par[1:(p-1)]
@@ -534,8 +531,7 @@ CircumT <- function(rawdt, m = 1, mcsc = "unconstrained", type = "continuous", m
     
     Delta = dPxdr[ex2[upper.tri(ex2)],]
     
-    null <-function(M)
-    {
+    null <-function(M) {
       tmp <- qr(M)
       set <- if (tmp$rank == 0L)
         seq_len(ncol(M))
